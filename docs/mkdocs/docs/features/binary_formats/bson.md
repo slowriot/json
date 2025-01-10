@@ -8,7 +8,7 @@ representation of data types that are not part of the JSON spec. For example, BS
 
     - [BSON Website](http://bsonspec.org) - the main source on BSON
     - [BSON Specification](http://bsonspec.org/spec.html) - the specification
-   
+
 
 ## Serialization
 
@@ -22,7 +22,8 @@ The library uses the following mapping from JSON values types to BSON types:
 | number_integer  | -2147483648..2147483647                   | int32     | 0x10   |
 | number_integer  | 2147483648..9223372036854775807           | int64     | 0x12   |
 | number_unsigned | 0..2147483647                             | int32     | 0x10   |
-| number_unsigned | 2147483648..18446744073709551615          | int64     | 0x11   |
+| number_unsigned | 2147483648..9223372036854775807           | int64     | 0x12   |
+| number_unsigned | 9223372036854775808..18446744073709551615 | uint64    | 0x11   |
 | number_float    | *any value*                               | double    | 0x01   |
 | string          | *any value*                               | string    | 0x02   |
 | array           | *any value*                               | document  | 0x04   |
@@ -42,7 +43,7 @@ The library uses the following mapping from JSON values types to BSON types:
     ```cpp
     --8<-- "examples/to_bson.cpp"
     ```
-    
+
     Output:
 
     ```c
@@ -72,7 +73,7 @@ The library maps BSON record types to JSON value types as follows:
 | Symbol                | 0x0E             | *unsupported*   |
 | JavaScript Code       | 0x0F             | *unsupported*   |
 | int32                 | 0x10             | number_integer  |
-| Timestamp             | 0x11             | number_unsigned |
+| uint64(Timestamp)     | 0x11             | number_unsigned |
 | 128-bit decimal float | 0x13             | *unsupported*   |
 | Max Key               | 0x7F             | *unsupported*   |
 | Min Key               | 0xFF             | *unsupported*   |
@@ -93,3 +94,8 @@ The library maps BSON record types to JSON value types as follows:
     ```json
     --8<-- "examples/from_bson.output"
     ```
+
+!!! note "Handling of BSON type 0x11"
+
+    BSON type 0x11 is used to represent uint64 numbers. This library treats these values purely as uint64 numbers
+    and does not parse them into date-related formats.

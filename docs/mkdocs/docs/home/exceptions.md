@@ -6,24 +6,33 @@
 
 All exceptions inherit from class `json::exception` (which in turn inherits from `std::exception`). It is used as the base class for all exceptions thrown by the `basic_json` class. This class can hence be used as "wildcard" to catch exceptions.
 
-```plantuml
-std::exception <|-- json::exception
-json::exception <|-- json::parse_error
-json::exception <|-- json::invalid_iterator
-json::exception <|-- json::type_error
-json::exception <|-- json::out_of_range
-json::exception <|-- json::other_error
+``` mermaid
+classDiagram
+  direction LR
+    class `std::exception` {
+        <<interface>>
+    }
 
-interface std::exception {}
+    class `json::exception` {
+        +const int id
+        +const char* what() const
+    }
 
-class json::exception {
-    + const int id
-    + const char* what() const
-}
+    class `json::parse_error` {
+        +const std::size_t byte
+    }
 
-class json::parse_error {
-    + const std::size_t byte
-}
+    class `json::invalid_iterator`
+    class `json::type_error`
+    class `json::out_of_range`
+    class `json::other_error`
+
+    `std::exception` <|-- `json::exception`
+    `json::exception` <|-- `json::parse_error`
+    `json::exception` <|-- `json::invalid_iterator`
+    `json::exception` <|-- `json::type_error`
+    `json::exception` <|-- `json::out_of_range`
+    `json::exception` <|-- `json::other_error`
 ```
 
 ### Switch off exceptions
@@ -38,7 +47,7 @@ Note that [`JSON_THROW_USER`](../api/macros/json_throw_user.md) should leave the
 
     ```cpp
     #include <iostream>
-    
+
     #define JSON_TRY_USER if(true)
     #define JSON_CATCH_USER(exception) if(false)
     #define JSON_THROW_USER(exception)                           \
@@ -46,7 +55,7 @@ Note that [`JSON_THROW_USER`](../api/macros/json_throw_user.md) should leave the
                    << " (function " << __FUNCTION__ << ") - "    \
                    << (exception).what() << std::endl;           \
          std::abort();}
-    
+
     #include <nlohmann/json.hpp>
     ```
 
@@ -63,7 +72,7 @@ Exceptions in the library are thrown in the local context of the JSON value they
     ```cpp
     --8<-- "examples/diagnostics_standard.cpp"
     ```
-    
+
     Output:
 
     ```
@@ -81,7 +90,7 @@ As this global context comes at the price of storing one additional pointer per 
     ```cpp
     --8<-- "examples/diagnostics_extended.cpp"
     ```
-    
+
     Output:
 
     ```
@@ -116,7 +125,7 @@ Exceptions have ids 1xx.
     ```cpp
     --8<-- "examples/parse_error.cpp"
     ```
-    
+
     Output:
 
     ```
@@ -368,7 +377,7 @@ Exceptions have ids 2xx.
     ```cpp
     --8<-- "examples/invalid_iterator.cpp"
     ```
-    
+
     Output:
 
     ```
@@ -532,7 +541,7 @@ Exceptions have ids 3xx.
     ```cpp
     --8<-- "examples/type_error.cpp"
     ```
-    
+
     Output:
 
     ```
@@ -726,7 +735,7 @@ The `dump()` function only works with UTF-8 encoded strings; that is, if you ass
 
     - Store the source file with UTF-8 encoding.
     - Pass an error handler as last parameter to the `dump()` function to avoid this exception:
-        - `json::error_handler_t::replace` will replace invalid bytes sequences with `U+FFFD` 
+        - `json::error_handler_t::replace` will replace invalid bytes sequences with `U+FFFD`
         - `json::error_handler_t::ignore` will silently ignore invalid byte sequences
 
 ### json.exception.type_error.317
@@ -761,7 +770,7 @@ Exceptions have ids 4xx.
     ```cpp
     --8<-- "examples/out_of_range.cpp"
     ```
-    
+
     Output:
 
     ```
@@ -840,7 +849,7 @@ UBJSON only supports integer numbers up to 9223372036854775807.
 
 !!! note
 
-    Since version 3.9.0, integer numbers beyond int64 are serialized as high-precision UBJSON numbers, and this exception does not further occur. 
+    Since version 3.9.0, integer numbers beyond int64 are serialized as high-precision UBJSON numbers, and this exception does not further occur.
 
 ### json.exception.out_of_range.408
 
@@ -876,7 +885,7 @@ Exceptions have ids 5xx.
     ```cpp
     --8<-- "examples/other_error.cpp"
     ```
-    
+
     Output:
 
     ```

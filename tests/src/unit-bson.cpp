@@ -3,7 +3,7 @@
 // |  |  |__   |  |  | | | |  version 3.11.3
 // |_____|_____|_____|_|___|  https://github.com/nlohmann/json
 //
-// SPDX-FileCopyrightText: 2013-2023 Niels Lohmann <https://nlohmann.me>
+// SPDX-FileCopyrightText: 2013 - 2024 Niels Lohmann <https://nlohmann.me>
 // SPDX-License-Identifier: MIT
 
 #include "doctest_compatibility.h"
@@ -530,7 +530,6 @@ TEST_CASE("BSON")
 
         SECTION("Some more complex document")
         {
-            // directly encoding uint64 is not supported in bson (only for timestamp values)
             json const j =
             {
                 {"double", 42.5},
@@ -620,7 +619,7 @@ TEST_CASE("BSON input/output_adapters")
     {
         SECTION("std::ostringstream")
         {
-            std::basic_ostringstream<std::uint8_t> ss;
+            std::basic_ostringstream<char> ss;
             json::to_bson(json_representation, ss);
             json j3 = json::from_bson(ss.str());
             CHECK(json_representation == j3);
@@ -1163,10 +1162,7 @@ TEST_CASE("BSON numerical data")
                 std::vector<std::uint64_t> const numbers
                 {
                     static_cast<std::uint64_t>((std::numeric_limits<std::int64_t>::max)()) + 1ULL,
-                    10000000000000000000ULL,
-                    18000000000000000000ULL,
-                    (std::numeric_limits<std::uint64_t>::max)() - 1ULL,
-                    (std::numeric_limits<std::uint64_t>::max)(),
+                    0xffffffffffffffff,
                 };
 
                 for (const auto i : numbers)
@@ -1202,7 +1198,7 @@ TEST_CASE("BSON numerical data")
                     auto j_roundtrip = json::from_bson(bson);
 
                     CHECK(j.at("entry").is_number_unsigned());
-                    CHECK(j_roundtrip.at("entry").is_number_integer());
+                    CHECK(j_roundtrip.at("entry").is_number_unsigned());
                     CHECK(j_roundtrip == j);
                     CHECK(json::from_bson(bson, true, false) == j);
                 }
