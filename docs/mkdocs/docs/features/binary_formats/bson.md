@@ -97,5 +97,5 @@ The library maps BSON record types to JSON value types as follows:
 
 !!! note "Handling of BSON type 0x11"
 
-    BSON type 0x11 is used to represent uint64 numbers. This library treats these values purely as uint64 numbers
+    BSON type 0x11 is used to represent uint64 numbers. This library treats these values purely as uint64 numbers 
     and does not parse them into date-related formats.
